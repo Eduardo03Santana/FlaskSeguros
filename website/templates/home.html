@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<h1 align="center">Seguros</h1>
+
+{% for seguradora in seguradoras%}
+{% set prd = {} %}
+  {% for pro in produtos %}
+    {% if pro.idSeguradora == seguradora.idSeguradora %}
+      {% set _ = prd.update({a:true}) %}
+    {% endif %}
+  {% endfor %}
+{{prd2}}
+{% if prd %}
+
+
+
+<div class="card" style="margin-top: 5px; margin-bottom: 5px;">
+    <div class="card-body"
+         data-toggle="collapse"
+         href="#collapse-id-{{loop.index}}"
+         role="button"
+         aria-expanded="false"
+         aria-controls="collapseExample"
+         style="cursor: pointer;">
+        {{ seguradora.nome }}
+    </div>
+</div>
+<div class="collapse" id="collapse-id-{{loop.index}}">
+    <div class="card card-body">
+        <div class="row">
+            {% for produto in produtos %} {% if produto.idSeguradora ==
+            seguradora.idSeguradora %}
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <div class="card p-2">
+                    <b>{{ produto.nmProduto }}</b>
+                    <a>{{ produto.dsProduto }} </a>
+                    <a style="margin-top: 10px;">Mensalidade: {{ produto.vlMensalidade }}</a>
+                    <form method="POST" action="/adesao/{{produto.idProduto}}">
+                        <input style="display: none"
+                               type="text"
+                               class="form-control"
+                               id="idProduto"
+                               name="idProduto"
+                               placeholder="HiddenInput"
+                               value="{{ produto.idProduto }}" />
+                        <button type="submit" class="btn btn-primary">Contratar</button>
+                    </form>
+                </div>
+            </div>
+            {% endif%} {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<!--ul class="list-group list-group-flush" id="notes">
+  {% for note in user.notes %}
+  <li class="list-group-item">
+    {{ note.data }}
+    <button type="button" class="close" onClick="deleteNote({{ note.id }})">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </li>
+  {% endfor %}
+</ul>
+<form method="POST">
+  <textarea name="note" id="note" class="form-control"></textarea>
+  <br />
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Add Note</button>
+  </div>
+</form> -->
+{% endblock %}

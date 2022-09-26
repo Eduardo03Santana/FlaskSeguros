@@ -1,0 +1,361 @@
+{% extends "base.html" %} {% block title %}Gerenciamento{% endblock %} {% block
+content %}
+<h1 align="center">Gerenciamento</h1>
+{% if user.tpUser == 0 %} {% for seguradora in seguradoras %}
+
+<div class="card" style="min-width: 150px; margin-top: 5px; margin-bottom: 5px;">
+    <div class="card-body" data-toggle="collapse" href="#collapse-id-{{seguradora.idSeguradora}}" role="button"
+         aria-expanded="false" aria-controls="collapseExample" style="cursor: pointer">
+        <a>{{ seguradora.nome }}</a>
+
+    </div>
+</div>
+
+<div class="collapse" id="collapse-id-{{seguradora.idSeguradora}}">
+    <div class="card card-body" style="min-width: 150px">
+        <!-- Cadastrar Produto p/ Seguradora-->
+        <button type="button" class="btn btn-primary" data-toggle="modal"
+                data-target="#ModalCenter-idSeguradora-{{seguradora.idSeguradora}}"
+                style="float: right; position: -webkit-sticky; margin:10px">
+            Cadastrar Produto
+        </button>
+        <!-- Alterar Seguradora-->
+        <button type="button" class="btn btn-secondary" data-toggle="modal"
+                data-target="#ModalCenter-Alterar-idSeguradora-{{seguradora.idSeguradora}}"
+                style="float: right; position: -webkit-sticky; margin:10px">
+            Alterar Seguradora
+        </button>
+        <!-- Excluir Seguradora-->
+        <button type="button" class="btn btn-danger" data-toggle="modal"
+                data-target="#Modal-Excluir-idSeguradora-{{seguradora.idSeguradora}}"
+                style="float: right; position: -webkit-sticky; margin:10px">
+            Excluir Seguradora
+        </button>
+
+        <div class="row">
+            {% for produto in produtos %} {% if produto.idSeguradora ==
+            seguradora.idSeguradora %}
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <div class="card p-2">
+                    <b>{{ produto.nmProduto }}</b>
+                    <a>{{ produto.dsProduto }}</a>
+                    <a style="margin-top: 10px;">Mensalidade: {{ produto.vlMensalidade }}</a>
+                    <form method="POST" action="/adesao/{{produto.idProduto}}">
+                        <input style="display: none" type="text" class="form-control" id="idProduto" name="idProduto"
+                               placeholder="HiddenInput" value="{{ produto.idProduto }}" />
+                        <button type="button" class="btn btn-secondary" data-toggle="modal"
+                                data-target="#ModalCenter-id-{{produto.idProduto}}">
+                            Alterar Produto
+                        </button>
+                        <button type="submit" class="btn btn-danger" formaction="/excluirP/{{produto.idProduto}}">
+                            Excluir Produto
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <!-- Modal Alterar Produto -->
+            <form method="POST" action="/alterarP/{{produto.idProduto}}">
+                <div class="modal fade" id="ModalCenter-id-{{produto.idProduto}}" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ModalLongTitle-id-{{produto.idProduto}}">
+                                    Alterar Produto
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="nome">Nome Do Produto</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" value="{{produto.nmProduto}}"
+                                           placeholder="Nome do Produto" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="nome">Descrição Do Produto</label>
+                                    <input type="text" class="form-control" id="dsProduto" name="dsProduto" value="{{produto.dsProduto}}"
+                                           placeholder="Descrição do Produto" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="nome">Valor do Produto</label>
+                                    <input type="number" class="form-control" id="vlMensalidade" name="vlMensalidade"
+                                           value="{{produto.vlMensalidade}}" placeholder="Valor do Produto" step=".01" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Salvar Alteracoes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+
+
+            {% endif%} {% endfor %} <!-- PRODUTO -->
+            <!-- Modal Excluir Seguradora -->
+            <form method="POST" action="/excluirSeguradora/{{seguradora.idSeguradora}}">
+                <div class="modal fade" id="Modal-Excluir-idSeguradora-{{seguradora.idSeguradora}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Excluir Seguradora?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Esta ação irá apagar permanentemente a seguradora, seus produtos e seguros, deseja continuar?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger">Confirmar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Modal Inserir Produto -->
+            <form method="POST" action="/cadastrarP/{{seguradora.idSeguradora}}">
+                <div class="modal fade" id="ModalCenter-idSeguradora-{{seguradora.idSeguradora}}" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ModalLongTitle-idSeguradora-{{seguradora.idSeguradora}}">
+                                    Cadastrar Produto
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="nmProduto">Nome Do Produto</label>
+                                    <input type="text" class="form-control" id="nmProduto" name="nmProduto" placeholder="Nome do Produto"
+                                           required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="nome">Descrição Do Produto</label>
+                                    <input type="text" class="form-control" id="dsProduto" name="dsProduto"
+                                           placeholder="Descrição do Produto" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="nome">Valor do Produto</label>
+                                    <input type="number" class="form-control" id="vlMensalidade" name="vlMensalidade"
+                                           placeholder="Valor do Produto" step=".01" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Cadastrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Modal Alterar Seguradora -->
+            <form method="POST" action="/alterarSeguradora/{{seguradora.idSeguradora}}">
+                <div class="modal fade" id="ModalCenter-Alterar-idSeguradora-{{seguradora.idSeguradora}}" tabindex="-1"
+                     role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="ModalLongTitle-Alterar-idSeguradora-{{seguradora.idSeguradora}}">
+                                    Alterar Seguradora
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="nmSeguradora">Nome Da Seguradora</label>
+                                    <input type="text" class="form-control" id="nmSeguradora" value="{{seguradora.nome}}"
+                                           name="nmSeguradora" placeholder="Nome Da Seguradora" required />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Alterar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--% endif %-->
+{% endfor %}
+<!-- Seguradora -->
+
+<button type="button" class="btn btn-primary" data-toggle="modal"
+        data-target="#ModalCenter-Cadastrar-Seguradora"
+        style="float: right; position: -webkit-sticky; margin:10px">
+    Cadastrar Seguradora
+</button>
+<!-- Modal Cadastrar Seguradora -->
+<form method="POST" action="/cadastrarSeguradora">
+    <div class="modal fade" id="ModalCenter-Cadastrar-Seguradora" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalCenter-Cadastrar-Seguradora">
+                        Cadastrar Seguradora
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nmSeguradora">Nome Da Seguradora</label>
+                        <input type="text" class="form-control" id="nmSeguradora"
+                               name="nmSeguradora" placeholder="Nome Da Seguradora" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Cadastrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% else %}
+<!-- USUARIO PAGE -->
+{% for segurado in segurados %}
+{% set seguros = data.session.execute('''
+select d.nome as nmSeguradora,* from tblSegurado a
+inner join tblSeguro b
+on a.idSegurado = b.idSegurado
+inner join tblProduto c
+on b.idProduto = c.idProduto
+inner join tblSeguradora d
+on d.idSeguradora = c.idSeguradora
+where idLogin={}
+'''.format(user.id)) %}
+<div class="card" style="margin-top: 5px;margin-bottom: 5px;">
+    <div class="card-body" data-toggle="collapse" href="#collapse{{segurado.idSegurado}}" role="button"
+         aria-expanded="false" aria-controls="collapseExample" style="cursor: pointer">
+        <span style="position: center;">Contratos de: {{ segurado.nome}} | CPF: {{segurado.cpf}}</span>
+        <form method="POST" action="/excluirSegurado/{{segurado.idSegurado}}">
+            <button type="submit" class="btn btn-danger" style="margin-top: 1vh">
+                Deletar Segurado
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="collapse" id="collapse{{segurado.idSegurado}}">
+    <div class="card card-body">
+        <button type="button" class="btn btn-secondary" data-toggle="modal"
+                data-target="#ModalCenter-Alterar-idSegurado-{{segurado.idSegurado}}"
+                style="float: right; position: -webkit-sticky; margin:10px">
+            Alterar Dados do Segurado
+        </button>
+        <div class="row">
+            {% for seguro in seguros %}
+            {% if seguro.idSegurado == segurado.idSegurado %}
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                <div class="card p-2">
+                    <b>{{ seguro.nmProduto }} - {{seguro.nmSeguradora}}</b>
+                    <a>{{seguro.dsProduto}}</a>
+                    <a>Mensalidade: {{ seguro.vlMensalidade }}</a>
+                    <form method="POST" action="/excluirS/{{seguro.idSeguro}}">
+                        <button type="submit" class="btn btn-danger" style="margin-top: 1vh">
+                            Cancelar Contrato
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif%} {% endfor %}
+            <!-- Seguro -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal Alterar Segurado -->
+<form method="POST" action="/alterarP/{{segurado.idSegurado}}">
+    <div class="modal fade" id="ModalCenter-Alterar-idSegurado-{{segurado.idSegurado}}" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalCenter-Alterar-idSegurado-{{segurado.idSegurado}}">
+                        Alterar Produto
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" class="form-control" id="nome" name="nome" value="{{segurado.nome}}"
+                               placeholder="Nome do Produto" required disabled='' />
+                    </div>
+                    <div class="form-group">
+                        <label for="nome">CPF</label>
+                        <input type="text" class="form-control" id="cpf" name="cpf" value="{{segurado.cpf}}"
+                               placeholder="CPF" required disabled='' />
+                    </div>
+                    <div class="row">
+
+                        <div class="form-group col-3">
+                            <label for="ddd">DDD</label>
+                            <input type="text" class="form-control" id="ddd" name="cpf" value="{{segurado.ddd}}"
+                                   placeholder="DDD" style="width: 75px;" required />
+                        </div>
+                        <div class="form-group col-9">
+                            <label for="telefone">Telefone</label>
+                            <input type="text" class="form-control" id="telefone" name="telefone" value="{{segurado.telefone}}"
+                                   placeholder="telefone" required />
+                        </div>
+
+
+                    </div>
+
+                </div> <!--ModalBody-->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Salvar Alteracoes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endfor %}
+{% endif %} {% endblock %}
