@@ -11,7 +11,7 @@ views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST'])
 def home():
-    if request.method == 'POST':
+    #if request.method == 'POST':
         #render_template("adesao.html",user=current_user,
         #produto=request.form.get('idProduto'))
 
@@ -189,4 +189,22 @@ def cadastrarSeguradora():
         return redirect('/perfil')
     return redirect('/')
 
+@views.route('/alterarSegurado/<idSeguradoR>', methods=['GET','POST'])
+def alterarSegurado(idSeguradoR):
+    if request.method == 'POST':
+        execucao = []
+        segurado = tblSegurado.query.filter_by(idSegurado=idSeguradoR).first()
+        if request.form.get('DDD') != segurado.ddd:
+            execucao.append(f"update tblSegurado set ddd = '{request.form.get('ddd')}' where idSegurado = {idSeguradoR}")
+            flash('DDD Atualizado')
+        if request.form.get('telefone') != segurado.telefone:
+            execucao.append(f"update tblSegurado set telefone = '{request.form.get('telefone')}' where idSegurado = {idSeguradoR}")
+            flash('Telefone Atualizado')
+        for exe in execucao:
+            db.session.execute(exe)
+        db.session.commit()
+    return redirect('/perfil')
+            
+            
+            
 
